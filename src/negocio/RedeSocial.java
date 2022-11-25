@@ -7,63 +7,81 @@ import java.util.ArrayList;
 
 public class RedeSocial {
 
-    private List<Usuario> usuarios = new ArrayList<Usuario>();
+    private List<Usuario> usuarios = new ArrayList<>();
     private Usuario usuarioLogado;
 
-    public void cadastrarUsuario(Usuario usuario) throws UsuarioJaCadastrado, SenhaInvalida {
-        if ( usuario.getSenha().isEmpty() )
+    public void cadastrarUsuario(String nome, String username, String senha, String biografia) throws UsuarioJaCadastrado, SenhaInvalida {
+        if ( senha.isEmpty() )
             throw new SenhaInvalida("Senha inválida!");
-        else if ( usuarios.contains(usuario) )
-            throw new UsuarioJaCadastrado("Username em uso!");
-        usuarios.add(usuario);
+
+        for(Usuario u : usuarios)
+            if ( u.getUserName().equals(username) )
+                throw new UsuarioJaCadastrado("Username já está em uso!");
+
+        usuarios.add(new Usuario(nome, username, senha, biografia));
     }
 
-    public void logar(Usuario usuario) throws UsuarioNaoEncontrado, SenhaIncorreta {
-        if ( !usuarios.contains(usuario) )
-            throw new UsuarioNaoEncontrado("Usuário não encontrado!");
-        else if ( !usuarios.get(usuarios.indexOf(usuario)).getSenha().equals(usuario.getSenha()) )
+    public void logar(String username, String senha) throws UsuarioNaoEncontrado, SenhaIncorreta {
+        Usuario usuarioSelecionado = null;
+
+        for(Usuario u : usuarios)
+            if( u.getUserName().equals(username) )
+                usuarioSelecionado = u;
+
+        if ( usuarioSelecionado == null )
+            throw new UsuarioNaoEncontrado("Usuário não cadastrado!");
+
+        else if ( !usuarioSelecionado.getSenha().equals(senha) )
             throw new SenhaIncorreta("Senha incorreta!");
-        usuarioLogado = usuarios.get(usuarios.indexOf(usuario));
+
+        usuarioLogado = usuarioSelecionado;
     }
 
     public void postar(Post post) {
         usuarioLogado.postar(post);
     }
 
-    public List<Post> verPosts() throws UsuarioNaoPossuiPosts {
-        if ( usuarioLogado.getPosts().isEmpty() )
-            throw new UsuarioNaoPossuiPosts("Você não possuí nenhum post!");
+    public List<Post> verPosts() {
         return usuarioLogado.getPosts();
     }
 
-    public List<Post> verFeed() throws FeedVazio {
-        if ( usuarioLogado.verFeed().isEmpty() )
-            throw new FeedVazio("Seu feed está vazio!");
-        return usuarioLogado.verFeed();
-    }
-
-    public List<Usuario> verSeguindo() throws SeguindoVazio {
-        if ( usuarioLogado.getSeguindo().isEmpty() )
-            throw new SeguindoVazio("Você não segue ninguém!");
+    public List<Usuario> verSeguindo() {
         return usuarioLogado.getSeguindo();
     }
 
-    public List<Usuario> verUsuarios() throws NenhumUsuarioCadastrado {
-        if ( usuarios.isEmpty() )
-            throw new NenhumUsuarioCadastrado("Nenhum usuário cadastrado!");
+    public List<Usuario> verUsuarios()  {
         return usuarios;
     }
 
-    public void seguir(Usuario usuario) {
-        usuarioLogado.seguir(usuario);
+    public void seguir(String username) {
+        for(Usuario u : usuarios)
+            if ( u.getUserName().equals(username) )
+                usuarioLogado.seguir(u);
     }
 
-    public void desseguir(Usuario usuario) {
-        usuarioLogado.desseguir(usuario);
+    public void desseguir(String username) {
+        for(Usuario u : usuarios)
+            if( u.getUserName().equals(username) )
+                usuarioLogado.desseguir(u);
     }
+
+    public List<Post> verFeed() {
+        return usuarioLogado.getFeed();
+    }
+    public List<Post> verFavoritos() { return usuarioLogado.getFavoritos(); }
+
+    public String verUsernameLogado() { return usuarioLogado.getUserName(); }
+
+    public String verBiografia() { return usuarioLogado.getBiografia(); }
+
+    public String verNome() { return usuarioLogado.getNome(); }
 
     public void favoritar(Post post) {
         usuarioLogado.favoritar(post);
+    }
+
+    public void deslogar() {
+        usuarioLogado = null;
     }
 
 }

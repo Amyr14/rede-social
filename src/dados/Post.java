@@ -5,28 +5,25 @@ import java.util.ArrayList;
 public class Post {
 
     private final String caminhoFoto;
-    private String legenda;
-    private List<Usuario> favoritadoPor = new ArrayList<Usuario>();
+    private final String legenda;
+    private final String autor;
 
-    public Post(String caminhoFoto, String legenda) {
+    public Post(String caminhoFoto, String legenda, String autor) {
         this.caminhoFoto = caminhoFoto;
         this.legenda = legenda;
-    }
-
-    public void favoritado(Usuario usuario) {
-        favoritadoPor.add(usuario);
+        this.autor = autor;
     }
 
     public String getCaminhoFoto() {
         return caminhoFoto;
     }
 
-    public String getLegenda() {
-        return legenda;
+    public String getAutor() {
+        return autor;
     }
 
-    public void setLegenda(String legenda) {
-        this.legenda = legenda;
+    public String getLegenda() {
+        return legenda;
     }
 
 }

@@ -8,43 +8,55 @@ public class Usuario {
     private String nome;
     private String biografia;
     private String senha;
-    private List<Post> posts = new ArrayList<Post>();
-    private List<Post> favoritos = new ArrayList<Post>();
-    private List<Usuario> seguindo = new ArrayList<Usuario>();
+    private final List<Post> posts = new ArrayList<>();
+    private final List<Post> favoritos = new ArrayList<>();
+    private final List<Post> feed = new ArrayList<>();
+    private final List<Usuario> seguindo = new ArrayList<>();
+    private final List<Usuario> seguidores = new ArrayList<>();
 
-    public Usuario(String userName, String senha) {
+    public Usuario(String nome, String userName, String senha, String biografia) {
+        this.nome = nome;
         this.userName = userName;
         this.senha = senha;
+        this.biografia = biografia;
+    }
+
+    public Usuario(String userName, String senha) {
+        this("", userName, senha, "");
     }
 
     public void postar(Post post) {
         posts.add(post);
+        for (Usuario u : seguidores)
+            u.addFeed(post);
     }
 
     public void seguir(Usuario usuario) {
         seguindo.add(usuario);
+        feed.addAll(usuario.getPosts());
+        usuario.addSeguidor(this);
     }
 
     public void desseguir(Usuario usuario) {
         seguindo.remove(usuario);
+        feed.removeAll(usuario.getPosts());
+        usuario.removSeguidor(this);
     }
-
-    public List<Post> verFeed() {
-        List<Post> feed = new ArrayList<Post>();
-        for(Usuario usuario : seguindo)
-            for(Post post : usuario.getPosts())
-                feed.add(post);
-        return feed;
-    }
-
 
     public void favoritar(Post post) {
         favoritos.add(post);
-        post.favoritado(this);
     }
 
-    public List<Post> getPosts() {
-        return posts;
+    public void addFeed(Post post) {
+        feed.add(post);
+    }
+
+    public void addSeguidor(Usuario usuario) {
+        seguidores.add(usuario);
+    }
+
+    public void removSeguidor(Usuario usuario) {
+        seguidores.remove(usuario);
     }
 
     public List<Usuario> getSeguindo() {
@@ -53,7 +65,7 @@ public class Usuario {
 
     @Override
     public boolean equals(Object o) {
-        Usuario usuario = (Usuario)o;
+        Usuario usuario = (Usuario) o;
         return userName.equals(usuario.getUserName());
     }
 
@@ -61,32 +73,27 @@ public class Usuario {
         return userName;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
     public String getNome() {
         return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
     }
 
     public String getBiografia() {
         return biografia;
     }
 
-    public void setBiografia(String biografia) {
-        this.biografia = biografia;
-    }
-
     public String getSenha() {
         return senha;
     }
 
-    public void setSenha(String senha) {
-        this.senha = senha;
+    public List<Post> getFavoritos() {
+        return favoritos;
     }
 
+    public List<Post> getPosts() {
+        return posts;
+    }
+
+    public List<Post> getFeed() {
+        return feed;
+    }
 }
